@@ -1,0 +1,33 @@
+{
+  "name": "require-lite",
+  "version": "1.0.0",
+  "description": "A light-weight JavaScript implementation of AMD.",
+  "main": "dist/require-lite.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/obogo/require-lite.git"
+  },
+  "keywords": [
+    "Require",
+    "AMD",
+    "TypeScript"
+  ],
+  "author": "roboncode@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/obogo/require-lite/issues"
+  },
+  "homepage": "https://github.com/obogo/require-lite#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-typescript": "^2.13.6",
+    "gulp-uglify": "^1.5.3"
+  }
+}
