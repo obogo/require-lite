@@ -56,10 +56,16 @@ var define:Function, require:any;
             for (i = 0; i < len; i++) {
                 dependencyName = deps[i];
                 if (definitions[dependencyName]) {
-                    if (!pending.hasOwnProperty(dependencyName)) {
+                    // if (!pending.hasOwnProperty(dependencyName)) {
+                    //     resolveModule(dependencyName, definitions[dependencyName]);
+                    // }
+                    if (pending[dependencyName]) {
+                        if(!require.ignoreWarnings) {
+                            console.warn('Recursive dependency between "' + name + '" and "' + dependencyName + '".');
+                        }
+                    } else {
                         resolveModule(dependencyName, definitions[dependencyName]);
                     }
-                    resolveModule(dependencyName, definitions[dependencyName]);
                     delete definitions[dependencyName];
                 }
             }
