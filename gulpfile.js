@@ -5,6 +5,7 @@ var plumber = require('gulp-plumber');
 var sourcemaps = require('gulp-sourcemaps');
 var concat = require('gulp-concat');
 var ts = require('gulp-typescript');
+var Server = require('karma').Server;
 
 // options
 var tsFiles = 'require-lite.ts';
@@ -31,6 +32,13 @@ gulp.task('minify', function () {
         .pipe(rename({suffix: '.min'}))
         .pipe(sourcemaps.write('maps'))
         .pipe(gulp.dest(destinationFolder)); // save .min.js
+});
+
+gulp.task('test', function (done) {
+    new Server({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: true
+    }, done).start();
 });
 
 gulp.task('default', ['compile', 'minify']);
