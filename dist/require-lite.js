@@ -5,15 +5,24 @@ var define, require;
     /**
      * Sets and Gets cache, defined, and pending items in a private internal cache
      */
-    _get = Function[CACHE_TOKEN] = Function[CACHE_TOKEN] || function (name) {
-        if (!_get[name]) {
-            _get[name] = {};
-        }
-        return _get[name];
-    };
-    definitions = _get(CACHED); // these are items that have been initialized and permanently cached
-    defined = _get(DEFINED); // these are items that have been defined but have not been initialized
-    pending = _get(PENDING); // these are items that have been initialized but have deps that need initialized before done
+    function init() {
+        _get = Function[CACHE_TOKEN] = Function[CACHE_TOKEN] || function (name) {
+            if (!_get[name]) {
+                _get[name] = {};
+            }
+            return _get[name];
+        };
+        definitions = _get(CACHED); // these are items that have been initialized and permanently cached
+        defined = _get(DEFINED); // these are items that have been defined but have not been initialized
+        pending = _get(PENDING); // these are items that have been initialized but have deps that need initialized before done
+    }
+    function clear() {
+        delete Function[CACHE_TOKEN];
+        delete definitions;
+        delete defined;
+        delete pending;
+        init();
+    }
     /**
      * Initializes
      */
@@ -44,20 +53,16 @@ var define, require;
             len = deps.length;
             for (i = 0; i < len; i++) {
                 dependencyName = deps[i];
-                if (definitions[dependencyName]) {
-                    // if (!pending.hasOwnProperty(dependencyName)) {
-                    //     resolveModule(dependencyName, definitions[dependencyName]);
-                    // }
-                    if (pending[dependencyName]) {
-                        if (!require.ignoreWarnings) {
-                            console.warn('Recursive dependency between "' + name + '" and "' + dependencyName + '".');
-                        }
+                // if (definitions[dependencyName]) {
+                if (pending[dependencyName]) {
+                    if (!require.ignoreWarnings) {
+                        console.warn('Recursive dependency between "' + name + '" and "' + dependencyName);
                     }
-                    else {
-                        resolveModule(dependencyName, definitions[dependencyName]);
-                    }
-                    delete definitions[dependencyName];
                 }
+                else if (definitions[dependencyName]) {
+                    resolveModule(dependencyName, definitions[dependencyName]);
+                }
+                delete definitions[dependencyName];
             }
         }
         if (!defined.hasOwnProperty(name)) {
@@ -77,7 +82,7 @@ var define, require;
                 }
                 else if (!require.ignoreWarnings) {
                     args.push(undefined);
-                    console.warn('Module "' + name + '" requires "' + dependencyName + '", but is undefined.');
+                    console.warn('Module "' + name + '" requires "' + dependencyName + '", but is undefined');
                 }
             }
             var returnVal = initHandler.apply(null, args); // call the function and assign return value onto defined list
@@ -98,12 +103,17 @@ var define, require;
     function resolve() {
         for (var name in definitions) {
             if (definitions.hasOwnProperty(name)) {
-                resolveModule(name, definitions[name]);
+                var fn = definitions[name];
+                delete definitions[name];
+                resolveModule(name, fn);
             }
         }
     }
     define = function (name, deps, initHandler) {
         if (deps === void 0) { deps = []; }
+        if (typeof name !== 'string') {
+            throw new Error('Property "name" requires type string');
+        }
         initDefinition.apply(null, arguments);
         clearInterval(timer);
         setTimeout(resolve);
@@ -112,6 +122,9 @@ var define, require;
         clearTimeout(timer);
         resolve();
         if (!handler) {
+            if (typeof modules !== 'string' && modules.length > 1) {
+                throw new Error('Callback function required');
+            }
             var name = modules.toString();
             return defined[name];
         }
@@ -125,7 +138,8 @@ var define, require;
         }
         handler.apply(null, args);
     };
+    require.clear = clear;
     require.ignoreWarnings = false;
-    return define;
+    init();
 }());
 //# sourceMappingURL=require-lite.js.map
