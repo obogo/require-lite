@@ -202,10 +202,6 @@ describe('require-lite', function () {
             expect(foo.handler).toHaveBeenCalled();
         });
 
-        it('expect handler to have been called', function () {
-            expect(foo.handler).toHaveBeenCalled();
-        });
-
         it('expect handler to return `undefined`', function () {
             expect(foo.handler.calls.mostRecent().returnValue).toBe(undefined);
         });
