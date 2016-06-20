@@ -6,8 +6,9 @@ This works well with https://github.com/obogo/amd-treeshake, which is used to re
 
 #### Instructions
 
-Add this files to before your define scripts compile it as part of your project with it being the top-most file.
-Require-lite does not load external files if a definition does not exist.
+Add this file top-most before define() declarations. 
+
+> *require-lite* does not load external files if a definition does not exist.
 
 #### Supported
 
@@ -64,8 +65,22 @@ myModule();
 define("myModule", ["bogus"], function(bogus){
 	...
 })
+```
 
-// you can ignore warnings with
+##### Recursive dependency detection
+
+Will warn you when you have modules depending on each other recursively.
+
+```js
+// This will warn you, `Module "c" has a recursive dependency on module "a"`
+
+define("a", ["b"], function() {...});
+define("b", ["c"], function() {...});
+define("c", ["a"], function() {...});
+```
+
+##### Suppress Warnings
+```js
 require.ignoreWarnings = true;
 ```
 
