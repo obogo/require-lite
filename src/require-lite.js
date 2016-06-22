@@ -32,7 +32,7 @@ var define, require;
             var val = args[1];
             if (typeof val === 'function') {
                 // ex. define('myFunc', function(){...});
-                defined[name] = val(); // invoke immediately and assign to defined
+                defined[name] = val.apply({ name: name }); // invoke immediately and assign to defined
             }
             else {
                 // store in a temporary definitions until all definitions have been processed
@@ -85,7 +85,7 @@ var define, require;
                     console.warn('Module "' + name + '" requires "' + dependencyName + '", but is undefined');
                 }
             }
-            var returnVal = initHandler.apply(null, args); // call the function and assign return value onto defined list
+            var returnVal = initHandler.apply({ name: name }, args); // call the function and assign return value onto defined list
             if (exports) {
                 if (exports.hasOwnProperty(DEFAULT)) {
                     defined[name] = exports[DEFAULT];
@@ -114,7 +114,7 @@ var define, require;
         if (typeof name !== 'string') {
             throw new Error('Property "name" requires type string');
         }
-        initDefinition.apply(null, arguments);
+        initDefinition.apply({ name: name }, arguments);
         clearInterval(timer);
         setTimeout(resolve);
     };
@@ -142,3 +142,4 @@ var define, require;
     require.ignoreWarnings = false;
     init();
 }());
+//# sourceMappingURL=require-lite.js.map

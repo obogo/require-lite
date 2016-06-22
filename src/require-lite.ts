@@ -45,7 +45,7 @@ var define:Function, require:any;
             var val = args[1];
             if (typeof val === 'function') {
                 // ex. define('myFunc', function(){...});
-                defined[name] = val(); // invoke immediately and assign to defined
+                defined[name] = val.apply({name: name}); // invoke immediately and assign to defined
             } else {
                 // store in a temporary definitions until all definitions have been processed
                 // ex. define('myFunc', ['toBoolean'], function(toBoolean){...})
@@ -96,7 +96,7 @@ var define:Function, require:any;
                     console.warn('Module "' + name + '" requires "' + dependencyName + '", but is undefined');
                 }
             }
-            var returnVal = initHandler.apply(null, args); // call the function and assign return value onto defined list
+            var returnVal = initHandler.apply({name: name}, args); // call the function and assign return value onto defined list
             if (exports) {
                 if (exports.hasOwnProperty(DEFAULT)) {
                     defined[name] = exports[DEFAULT];
@@ -122,10 +122,10 @@ var define:Function, require:any;
     }
 
     define = function (name:string, deps = [], initHandler:Function) {
-        if(typeof name !== 'string') {
+        if (typeof name !== 'string') {
             throw new Error('Property "name" requires type string');
         }
-        initDefinition.apply(null, arguments);
+        initDefinition.apply({name: name}, arguments);
         clearInterval(timer);
         setTimeout(resolve);
     };

@@ -360,15 +360,15 @@ describe('require-lite', function () {
             require.clear();
             require.ignoreWarnings = false;
 
-            define('a', ['b'], function(){
+            define('a', ['b'], function () {
                 return 'a';
             });
 
-            define('b', ['c'], function(){
+            define('b', ['c'], function () {
                 return 'b';
             });
 
-            define('c', ['a'], function(){
+            define('c', ['a'], function () {
                 return 'c';
             });
             setTimeout(done);
@@ -379,11 +379,11 @@ describe('require-lite', function () {
         });
 
         it('expect console.warn to equal - [ Recursive dependency between "c" and "a" ] ', function () {
-            expect(console.warn.calls.first().args).toEqual([ 'Recursive dependency between "c" and "a' ] );
+            expect(console.warn.calls.first().args).toEqual(['Recursive dependency between "c" and "a']);
         });
 
         it('expect console.warn to equal - [ Module "c" requires "a", but is undefined ] ', function () {
-            expect(console.warn.calls.mostRecent().args).toEqual([ 'Module "c" requires "a", but is undefined' ] );
+            expect(console.warn.calls.mostRecent().args).toEqual(['Module "c" requires "a", but is undefined']);
         });
     });
 
@@ -399,7 +399,7 @@ describe('require-lite', function () {
         it('expect value to throw Error("Property "name" requires type string")', function () {
             var err;
             try {
-                define(['bar'], function(){
+                define(['bar'], function () {
                     return 'baz';
                 });
             } catch (e) {
@@ -407,5 +407,23 @@ describe('require-lite', function () {
             }
             expect(err.message).toBe('Property "name" requires type string');
         });
+    });
+
+    describe('define("foo", handler)', function () {
+
+        var name;
+        beforeAll(function (done) {
+            require.clear();
+            define('foo', function () {
+                name = this.name;
+                return 'foo';
+            });
+
+            setTimeout(done);
+        });
+
+        it('this.name === "foo" in handler', function () {
+            expect(name).toBe('foo');
+        })
     });
 });
