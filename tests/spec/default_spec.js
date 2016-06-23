@@ -426,4 +426,31 @@ describe('require-lite', function () {
             expect(name).toBe('foo');
         })
     });
+
+    describe('ready() callback', function () {
+
+        var foo = {
+            bar: function () {
+
+            }
+        };
+
+        beforeAll(function (done) {
+            spyOn(foo, 'bar');
+
+            require.clear();
+
+            require.ready(foo.bar)
+
+            define('foo', function () {
+                return 'foo';
+            });
+
+            setTimeout(done);
+        });
+
+        it('expect it should have been called', function () {
+            expect(foo.bar).toHaveBeenCalled();
+        })
+    });
 });

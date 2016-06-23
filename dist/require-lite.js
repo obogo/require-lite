@@ -108,6 +108,9 @@ var define, require;
                 resolveModule(name, fn);
             }
         }
+        if (defined['~']) {
+            defined['~']();
+        }
     }
     define = function (name, deps, initHandler) {
         if (deps === void 0) { deps = []; }
@@ -140,6 +143,9 @@ var define, require;
     };
     require.clear = clear;
     require.ignoreWarnings = false;
+    require.ready = function (readyHandler) {
+        defined['~'] = readyHandler;
+    };
     init();
 }());
 //# sourceMappingURL=require-lite.js.map

@@ -119,6 +119,11 @@ var define:Function, require:any;
                 resolveModule(name, fn);
             }
         }
+        var callback = defined[CACHE_TOKEN]
+        if (callback) {
+            callback();
+            delete defined[CACHE_TOKEN];
+        }
     }
 
     define = function (name:string, deps = [], initHandler:Function) {
@@ -155,6 +160,9 @@ var define:Function, require:any;
 
     require.clear = clear;
     require.ignoreWarnings = false;
+    require.ready = function (readyHandler:Function) {
+        defined[CACHE_TOKEN] = readyHandler;
+    };
 
     init();
 }());
