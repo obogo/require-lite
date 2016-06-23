@@ -119,7 +119,7 @@ var define:Function, require:any;
                 resolveModule(name, fn);
             }
         }
-        var callback = defined[CACHE_TOKEN]
+        var callback = defined[CACHE_TOKEN];
         if (callback) {
             callback();
             delete defined[CACHE_TOKEN];

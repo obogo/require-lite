@@ -108,8 +108,10 @@ var define, require;
                 resolveModule(name, fn);
             }
         }
-        if (defined['~']) {
-            defined['~']();
+        var callback = defined[CACHE_TOKEN];
+        if (callback) {
+            callback();
+            delete defined[CACHE_TOKEN];
         }
     }
     define = function (name, deps, initHandler) {
@@ -144,7 +146,7 @@ var define, require;
     require.clear = clear;
     require.ignoreWarnings = false;
     require.ready = function (readyHandler) {
-        defined['~'] = readyHandler;
+        defined[CACHE_TOKEN] = readyHandler;
     };
     init();
 }());
