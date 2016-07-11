@@ -42,7 +42,6 @@ var define, require;
             }
         }
     }
-    ;
     function resolveModule(name, initHandler) {
         pending[name] = true; // mark this definition as pending
         var deps = initHandler[DEFINITIONS_TOKEN]; // get any dependencies required by definition
@@ -105,7 +104,11 @@ var define, require;
             if (definitions.hasOwnProperty(name)) {
                 var fn = definitions[name];
                 delete definitions[name];
-                resolveModule(name, fn);
+                try {
+                    resolveModule(name, fn);
+                }
+                catch (e) {
+                }
             }
         }
         var callback = defined[CACHE_TOKEN];
@@ -119,7 +122,12 @@ var define, require;
         if (typeof name !== 'string') {
             throw new Error('Property "name" requires type string');
         }
-        initDefinition.apply({ name: name }, arguments);
+        try {
+            initDefinition.apply({ name: name }, arguments);
+        }
+        catch (e) {
+            throw new Error('ModuleError in "' + name + '": ' + e.message);
+        }
         clearInterval(timer);
         setTimeout(resolve);
     };
@@ -145,9 +153,10 @@ var define, require;
     };
     require.clear = clear;
     require.ignoreWarnings = false;
-    require.ready = function (readyHandler) {
+    require.resolve = resolve;
+    require.ready = function (readyHandler, errorHandler) {
         defined[CACHE_TOKEN] = readyHandler;
+        defined[DEFINITIONS_TOKEN] = errorHandler;
     };
     init();
 }());
-//# sourceMappingURL=require-lite.js.map

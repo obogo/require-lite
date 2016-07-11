@@ -53,7 +53,7 @@ var define:Function, require:any;
                 definitions[name][DEFINITIONS_TOKEN] = val; // assign dependencies to definitions on function itself
             }
         }
-    };
+    }
 
     function resolveModule(name:string, initHandler:Function) {
         pending[name] = true; // mark this definition as pending
@@ -116,7 +116,11 @@ var define:Function, require:any;
             if (definitions.hasOwnProperty(name)) {
                 var fn = definitions[name];
                 delete definitions[name];
-                resolveModule(name, fn);
+                try {
+                    resolveModule(name, fn);
+                } catch (e) {
+                    // throw new Error('ModuleError in "' + name + '": ' + e.message);
+                }
             }
         }
         var callback = defined[CACHE_TOKEN];
@@ -130,7 +134,11 @@ var define:Function, require:any;
         if (typeof name !== 'string') {
             throw new Error('Property "name" requires type string');
         }
-        initDefinition.apply({name: name}, arguments);
+        try {
+            initDefinition.apply({name: name}, arguments);
+        } catch(e) {
+            throw new Error('ModuleError in "' + name + '": ' + e.message)
+        }
         clearInterval(timer);
         setTimeout(resolve);
     };
@@ -160,8 +168,10 @@ var define:Function, require:any;
 
     require.clear = clear;
     require.ignoreWarnings = false;
-    require.ready = function (readyHandler:Function) {
+    require.resolve = resolve;
+    require.ready = function (readyHandler:Function, errorHandler?:Function) {
         defined[CACHE_TOKEN] = readyHandler;
+        defined[DEFINITIONS_TOKEN] = errorHandler;
     };
 
     init();

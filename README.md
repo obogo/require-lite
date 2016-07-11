@@ -84,13 +84,17 @@ define("c", ["a"], function() {...});
 require.ignoreWarnings = true;
 ```
 
+#####  Resolve
+```js
+require.resolve()
+```	
+
 #### Not supported
 
 ```js
 // anonymous definitions, first param must be name:String
 define([deps...], handler:Function):void
 ```
-
 
 #### Usage
 

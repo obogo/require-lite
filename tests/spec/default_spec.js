@@ -40,7 +40,121 @@ describe('require-lite', function () {
         it('expect foo.bar() to return "bar"', function () {
             expect(foo.bar.calls.mostRecent().returnValue).toBe('bar');
         });
-    })
+    });
+
+    describe('ready() callback', function () {
+
+        var foo = {
+            bar: function () {
+
+            }
+        };
+
+        beforeAll(function (done) {
+            spyOn(foo, 'bar');
+
+            require.clear();
+
+            require.ready(foo.bar)
+
+            define('foo', function () {
+                return 'foo';
+            });
+
+            setTimeout(done);
+        });
+
+        it('expect it should have been called', function () {
+            expect(foo.bar).toHaveBeenCalled();
+        })
+    });
+
+    describe('Handling module internal errors', function () {
+        describe('define("bar", foo.bar) has a reference to function that does not exist', function() {
+
+            var foo = {
+                bar: function () {
+                    // throw new Error('Oops.')
+                    doesNotExist();
+                    return 'bar';
+                },
+                baz: function() {
+                    doesNotExist();
+                    return 'baz'
+                }
+            };
+
+            var errorMessage;
+            beforeAll(function(done){
+                require.clear();
+                try {
+                    define('bar', foo.bar);
+                } catch (e) {
+                    errorMessage = e.message;
+                }
+                setTimeout(done);
+            });
+
+            it('error message - ModuleError in "bar": doesNotExist is not defined', function () {
+                expect(errorMessage).toBe('ModuleError in "bar": doesNotExist is not defined');
+            });
+        });
+
+        describe('define("baz", ["bar"], foo.baz) has a reference a module', function() {
+            var foo = {
+                bar: function () {
+                    doesNotExist();
+                    return 'bar';
+                },
+                baz: function() {
+                    return 'baz'
+                }
+            };
+
+            beforeAll(function(done){
+                require.clear();
+                require.ready(done)
+                define('baz', ["bar"], foo.baz);
+            });
+
+            it('baz not to be undefined', function () {
+                expect(require('baz')).toBeDefined();
+            });
+
+            it('bar not to be undefined', function () {
+                expect(require('bar')).not.toBeDefined();
+            });
+        })
+
+        describe('define("baz", ["bar"], foo.baz) has a reference a module', function() {
+
+            var foo = {
+                bar: function () {
+                    // throw new Error('Oops.')
+                    doesNotExist();
+                    return 'bar';
+                },
+                baz: function() {
+                    doesNotExist();
+                    return 'baz'
+                }
+            };
+
+            beforeAll(function(done){
+                require.clear();
+                require.ready(done)
+                define('baz', ["bar"], foo.baz);
+            });
+
+            it('baz not to be undefined', function () {
+                expect(require('baz')).not.toBeDefined();
+            });
+
+            it('bar not to be undefined', function () {
+                expect(require('bar')).not.toBeDefined();
+            });
+        })
+    });
 
     describe('define("bar", ["baz"], foo.bar)', function () {
         var bazValue;
@@ -80,7 +194,7 @@ describe('require-lite', function () {
         it('expect baz value to equal "baz"', function () {
             expect(bazValue).toEqual('baz');
         });
-    })
+    });
 
     describe('require("bar")', function () {
         var foo = {
@@ -394,7 +508,7 @@ describe('require-lite', function () {
             require.clear();
 
             setTimeout(done);
-        })
+        });
 
         it('expect value to throw Error("Property "name" requires type string")', function () {
             var err;
@@ -424,33 +538,6 @@ describe('require-lite', function () {
 
         it('this.name === "foo" in handler', function () {
             expect(name).toBe('foo');
-        })
-    });
-
-    describe('ready() callback', function () {
-
-        var foo = {
-            bar: function () {
-
-            }
-        };
-
-        beforeAll(function (done) {
-            spyOn(foo, 'bar');
-
-            require.clear();
-
-            require.ready(foo.bar)
-
-            define('foo', function () {
-                return 'foo';
-            });
-
-            setTimeout(done);
-        });
-
-        it('expect it should have been called', function () {
-            expect(foo.bar).toHaveBeenCalled();
         })
     });
 });
