@@ -113,8 +113,8 @@ var define, require;
         }
         var callback = defined[CACHE_TOKEN];
         if (callback) {
-            callback();
             delete defined[CACHE_TOKEN];
+            callback();
         }
     }
     define = function (name, deps, initHandler) {

@@ -125,8 +125,8 @@ var define:Function, require:any;
         }
         var callback = defined[CACHE_TOKEN];
         if (callback) {
-            callback();
             delete defined[CACHE_TOKEN];
+            callback();
         }
     }
 
