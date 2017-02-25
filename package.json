@@ -1,6 +1,6 @@
 {
   "name": "require-lite",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A light-weight JavaScript implementation of AMD.",
   "main": "dist/require-lite.min.js",
   "scripts": {
