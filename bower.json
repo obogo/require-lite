@@ -8,7 +8,7 @@
   "main": [
     "dist/require-lite.js",
     "dist/require-lite.min.js",
-    "dist/maps/require-lite.min.js",
+    "dist/maps/require-lite.min.js"
   ],
   "moduleType": [
     "amd"
